@@ -6,9 +6,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OCRResultModel {
+    // 文本边框点信息
     private List<Point> points;
+    // 识别出的字在label中的索引
     private List<Integer> wordIndex;
+    // 识别结果
     private String label;
+    // 识别置信度
     private float confidence;
 
     public OCRResultModel() {

@@ -23,7 +23,7 @@ Java_cn_codekong_paddle_ocr_OCRPredictorNative_init(
   ppredictor::OCR_Config conf;
   conf.thread_num = thread_num;
   conf.mode = str_to_cpu_mode(cpu_mode);
-  auto *orc_predictor =
+  ppredictor::OCR_PPredictor *orc_predictor =
       new ppredictor::OCR_PPredictor{conf};
   orc_predictor->init_from_file(det_model_path, rec_model_path, cls_model_path);
   return reinterpret_cast<jlong>(orc_predictor);
@@ -69,7 +69,7 @@ Java_cn_codekong_paddle_ocr_OCRPredictorNative_forward(
     LOGE("origin bitmap cannot convert to CV Mat");
     return cpp_array_to_jfloatarray(env, nullptr, 0);
   }
-  auto *ppredictor =
+  ppredictor::OCR_PPredictor *ppredictor =
       (ppredictor::OCR_PPredictor *)java_pointer;
   std::vector<float> dims_float_arr = jfloatarray_to_float_vector(env, ddims);
   std::vector<int64_t> dims_arr;
@@ -77,9 +77,9 @@ Java_cn_codekong_paddle_ocr_OCRPredictorNative_forward(
   std::copy(dims_float_arr.cbegin(), dims_float_arr.cend(), dims_arr.begin());
 
   // 这里值有点大，就不调用jfloatarray_to_float_vector了
-  auto buf_len = (int64_t)env->GetArrayLength(buf);
+  int64_t buf_len = (int64_t)env->GetArrayLength(buf);
   jfloat *buf_data = env->GetFloatArrayElements(buf, JNI_FALSE);
-  auto *data = (jfloat *)buf_data;
+  float *data = (jfloat *)buf_data;
   std::vector<ppredictor::OCRPredictResult> results =
       ppredictor->infer_ocr(dims_arr, data, buf_len, NET_OCR, origin);
   LOGI("infer_ocr finished with boxes %ld", results.size());
@@ -108,7 +108,7 @@ Java_cn_codekong_paddle_ocr_OCRPredictorNative_release(
     LOGE("JAVA pointer is NULL");
     return;
   }
-  auto *ppredictor =
+  ppredictor::OCR_PPredictor *ppredictor =
       (ppredictor::OCR_PPredictor *)java_pointer;
   delete ppredictor;
 }

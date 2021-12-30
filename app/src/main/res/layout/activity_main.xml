@@ -33,11 +33,11 @@
     <ImageView
         android:id="@+id/rec_result_img"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:layout_marginBottom="280dp"
+        android:layout_height="400dp"
+        android:layout_marginBottom="164dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/rec_img"
-        app:layout_constraintHorizontal_bias="0.075"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/load_model" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

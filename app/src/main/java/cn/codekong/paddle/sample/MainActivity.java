@@ -5,23 +5,24 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 import cn.codekong.paddle.R;
 import cn.codekong.paddle.ocr.OCRConfig;
 import cn.codekong.paddle.ocr.OCRPredictor;
-import cn.codekong.paddle.ocr.OCRPredictorNative;
+import cn.codekong.paddle.ocr.OCRResultModel;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -54,11 +55,16 @@ public class MainActivity extends AppCompatActivity {
                         runOnUiThread(() -> Toast.makeText(MainActivity.this, initRes ? "初始化模型成功" : "模型初始化失败", Toast.LENGTH_SHORT).show());
                         break;
                     case REC_IMG:
-                        boolean recRes = recImg();
-                        if (recRes) {
-                            runOnUiThread(() -> mRecResultImg.setImageBitmap(mOCRPredictor.outputImage()));
+                        List<OCRResultModel> recRes = recImg();
+                        if (recRes != null && !recRes.isEmpty()) {
+                            Bitmap image = ((BitmapDrawable) mRecResultImg.getDrawable()).getBitmap();
+                            image = image.copy(Bitmap.Config.ARGB_8888, true);
+                            String recWords = ImgHelper.drawResults(recRes, image);
+                            Log.d(TAG, "ocr words = " + recWords);
+                            Bitmap finalImage = image;
+                            runOnUiThread(() -> mRecResultImg.setImageBitmap(finalImage));
                         }
-                        runOnUiThread(() -> Toast.makeText(MainActivity.this, recRes ? "OCR识别成功" : "OCR识别失败", Toast.LENGTH_SHORT).show());
+                        runOnUiThread(() -> Toast.makeText(MainActivity.this, recRes != null ? "OCR识别成功" : "OCR识别失败", Toast.LENGTH_SHORT).show());
                         break;
                 }
             }
@@ -85,16 +91,26 @@ public class MainActivity extends AppCompatActivity {
         return mOCRPredictor.init(App.getAppContext(), OCRConfig.ASSETS_MODEL_DIR_PATH, OCRConfig.ASSETS_LABEL_FILE_PATH);
     }
 
-    private boolean recImg() {
+    private List<OCRResultModel> recImg() {
+        Bitmap image = ((BitmapDrawable) mRecResultImg.getDrawable()).getBitmap();
+        mOCRPredictor.setInputImage(image);
+        if (mOCRPredictor.isLoaded()) {
+            return mOCRPredictor.runModel();
+        }
+        return null;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        String assetImagePath = "images/sample.jpeg";
+        InputStream imageStream = null;
         try {
-            String assetImagePath = "images/0.jpg";
-            InputStream imageStream = getAssets().open(assetImagePath);
-            Bitmap image = BitmapFactory.decodeStream(imageStream);
-            mOCRPredictor.setInputImage(image);
-            return mOCRPredictor.isLoaded() && mOCRPredictor.runModel();
+            imageStream = getAssets().open(assetImagePath);
         } catch (IOException e) {
             e.printStackTrace();
-            return false;
         }
+        Bitmap image = BitmapFactory.decodeStream(imageStream);
+        mRecResultImg.setImageBitmap(image);
     }
 }
