@@ -21,7 +21,7 @@ import java.util.Vector;
 public class OCRPredictor {
     public boolean isLoaded = false;
     protected OCRPredictorNative mPaddlePredictorNative;
-    protected float inferenceTime = 0;
+    protected long inferenceTime = 0;
     protected Vector<String> wordLabels = new Vector<>();
     protected long[] inputShape = OCRConfig.INPUT_SHAPE;
     protected float[] inputMean = OCRConfig.INPUT_MEAN;
@@ -29,6 +29,10 @@ public class OCRPredictor {
     protected Bitmap inputImage;
     protected float preprocessTime = 0;
     protected float postProcessTime = 0;
+
+    public boolean init(Context appCtx) {
+        return init(appCtx, OCRConfig.ASSETS_MODEL_DIR_PATH, OCRConfig.ASSETS_LABEL_FILE_PATH, OCRConfig.DEFAULT_CPU_THREAD, OCRConfig.DEFAULT_CPU_RUN_MODE);
+    }
 
     /**
      * 初始化
@@ -72,7 +76,7 @@ public class OCRPredictor {
      */
     protected boolean loadModel(Context appCtx, String modelPath, int cpuThreadNum, String cpuPowerMode) {
         // 释放之前的模型
-        releaseModel();
+        release();
         if (modelPath.isEmpty()) {
             return false;
         }
@@ -96,7 +100,7 @@ public class OCRPredictor {
     /**
      * 释放模型
      */
-    public void releaseModel() {
+    public void release() {
         if (mPaddlePredictorNative != null) {
             mPaddlePredictorNative.destroy();
             mPaddlePredictorNative = null;
@@ -130,7 +134,7 @@ public class OCRPredictor {
         return true;
     }
 
-    public List<OCRResultModel> runModel() {
+    public List<OCRResultModel> runOcr() {
         if (inputImage == null || !isLoaded()) {
             return Collections.emptyList();
         }
@@ -175,7 +179,7 @@ public class OCRPredictor {
         return mPaddlePredictorNative != null && isLoaded;
     }
 
-    public float inferenceTime() {
+    public long inferenceTime() {
         return inferenceTime;
     }
 

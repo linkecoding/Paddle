@@ -95,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
         Bitmap image = ((BitmapDrawable) mRecResultImg.getDrawable()).getBitmap();
         mOCRPredictor.setInputImage(image);
         if (mOCRPredictor.isLoaded()) {
-            return mOCRPredictor.runModel();
+            return mOCRPredictor.runOcr();
         }
         return null;
     }
