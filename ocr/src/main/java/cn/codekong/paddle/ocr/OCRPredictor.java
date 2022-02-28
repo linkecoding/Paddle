@@ -264,12 +264,12 @@ public class OCRPredictor {
         return words_result;
     }
 
-    public List<OcrResult> ocr(Bitmap inputImage) {
+    public List<OcrResult> ocr() {
         if (inputImage == null) {
             return Collections.emptyList();
         }
         // Pre-process image, and feed input tensor with pre-processed data
-        Bitmap scaleImage = Utils.resizeWithStep(inputImage, Long.valueOf(inputShape[2]).intValue(), 32);
+        Bitmap scaleImage = Utils.resizeWithStep(this.inputImage, Long.valueOf(inputShape[2]).intValue(), 32);
         Date start = new Date();
         int channels = (int) inputShape[1];
         int width = scaleImage.getWidth();
