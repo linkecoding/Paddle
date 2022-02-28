@@ -52,7 +52,7 @@ public class OCRPredictorNative {
     }
 
     public void destroy() {
-        if (nativePointer > 0) {
+        if (nativePointer != 0) {
             release(nativePointer);
             nativePointer = 0;
         }
@@ -105,5 +105,11 @@ public class OCRPredictorNative {
             model.addWordIndex(index);
         }
         return model;
+    }
+    
+    @Override
+    protected void finalize() throws Throwable {
+        super.finalize();
+        destroy();
     }
 }
