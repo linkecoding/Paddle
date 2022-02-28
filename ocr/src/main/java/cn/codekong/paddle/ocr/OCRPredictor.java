@@ -264,8 +264,7 @@ public class OCRPredictor {
         return words_result;
     }
 
-    public List<OcrResult> ocr(Bitmap inputImage, int cpuThreadNum) {
-        this.cpuThreadNum = cpuThreadNum;
+    public List<OcrResult> ocr(Bitmap inputImage) {
         if (inputImage == null) {
             return Collections.emptyList();
         }
