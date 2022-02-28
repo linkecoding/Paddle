@@ -1,8 +1,6 @@
 package cn.codekong.paddle.ocr;
 
-import static android.graphics.Color.blue;
-import static android.graphics.Color.green;
-import static android.graphics.Color.red;
+import static android.graphics.Color.*;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -15,6 +13,15 @@ import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.Point;
+import android.graphics.Rect;
+import android.util.Log;
+
+import androidx.annotation.NonNull;
 /**
  * OCR预测器
  */
